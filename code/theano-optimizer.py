@@ -74,17 +74,8 @@ def main():
 	
 	ligradient=T.grad(cost=cost,wrt=liparameter)
 	lioptimize=optimizer(liparameter,ligradient)
-	PARANUM=len(lioptimize)
-	if PARANUM==2:
-		if args.method=="vanillasgd":
-			liupdate=optimizer(liparameter,ligradient)
-			train=theano.function(inputs=[x,t],outputs=[cost,T.argmax(y,axis=1)],updates=liupdate)
-		else:
-			liupdate,b=optimizer(liparameter,ligradient)
-			train=theano.function(inputs=[x,t],outputs=[cost,T.argmax(y,axis=1),b],updates=liupdate)
-	else:
-		liupdate=optimizer(liparameter,ligradient)
-		train=theano.function(inputs=[x,t],outputs=[cost,T.argmax(y,axis=1)],updates=liupdate)
+	liupdate=optimizer(liparameter,ligradient)
+	train=theano.function(inputs=[x,t],outputs=[cost,T.argmax(y,axis=1)],updates=liupdate)
 	
 	valid=theano.function(inputs=[x,t],outputs=[cost,T.argmax(y,axis=1)])
 	
@@ -95,21 +86,9 @@ def main():
 		for i in range(TBATCHNUM):
 			start=i*TBATCHSIZE
 			end=start+TBATCHSIZE
-			if PARANUM==2:
-				if args.method=="vanillasgd":
-					costnow,prednow=train(litrainx[index[start:end]],litraint[index[start:end]])
-				else:
-					costnow,prednow,b=train(litrainx[index[start:end]],litraint[index[start:end]])
-					print(b,end=" ")
-			else:
-				costnow,prednow=train(litrainx[index[start:end]],litraint[index[start:end]])
+			costnow,prednow=train(litrainx[index[start:end]],litraint[index[start:end]])
 			traincost+=costnow
 			trainacc+=accuracy(litraint[index[start:end]],prednow)
-		if PARANUM==2:
-			if args.method=="vanillasgd":
-				pass
-			else:
-				print("\n",end="")
 		mean_traincost,mean_trainacc=traincost/TBATCHNUM,trainacc/TBATCHNUM
 		mean_validcost,validpred=valid(livalidx,livalidt)
 		mean_validacc=accuracy(livalidt,validpred)
