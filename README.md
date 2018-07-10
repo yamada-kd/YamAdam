@@ -1,5 +1,5 @@
 # YamAdam
-**Yam**ada modified **Adam**
+**Ya**mada **m**odified **Adam**
 
 ## Abstract
 YamAdam is fast convergent optimizer incorporating unit correction system and moment estimation
